@@ -1,10 +1,3 @@
-version: '3.8'
-
-# Part 2:
-# - Uses pre-built Docker Hub images (no Dockerfile)
-# - Mounts code as volumes
-# - Different container names and port (8081)
-
 services:
 
   backend-p2:
@@ -12,8 +5,9 @@ services:
     container_name: todo-backend-p2
     volumes:
       - ./Backend:/app
+    command: sh -c "rm -rf node_modules && npm install && node index.js"
     environment:
-      - MONGODB_URI=mongodb+srv://todo_admin:8DsOp0apEbGBTOq0@cluster0.ym7jtyv.mongodb.net/?appName=Cluster0
+      - MONGODB_URI=mongodb+srv://todo_admin:8DsOp0apEbGBTOq0@cluster0.ym7jtyv.mongodb.net/tododb?retryWrites=true&w=majority
       - PORT=4002
     networks:
       - todo-net-p2
@@ -24,6 +18,7 @@ services:
     container_name: todo-frontend-p2
     volumes:
       - ./Frontend:/app
+    command: sh -c "rm -rf node_modules && npm install && npm run dev"
     depends_on:
       - backend-p2
     networks:
