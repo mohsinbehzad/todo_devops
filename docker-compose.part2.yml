@@ -1,0 +1,49 @@
+version: '3.8'
+
+# Part 2:
+# - Uses pre-built Docker Hub images (no Dockerfile)
+# - Mounts code as volumes
+# - Different container names and port (8081)
+
+services:
+
+  backend-p2:
+    image: mohsinbehzad143/todo-backend:latest
+    container_name: todo-backend-p2
+    volumes:
+      - ./Backend:/app
+    environment:
+      - MONGODB_URI=mongodb+srv://todo_admin:8DsOp0apEbGBTOq0@cluster0.ym7jtyv.mongodb.net/?appName=Cluster0
+      - PORT=4002
+    networks:
+      - todo-net-p2
+    restart: unless-stopped
+
+  frontend-p2:
+    image: mohsinbehzad143/todo-frontend:latest
+    container_name: todo-frontend-p2
+    volumes:
+      - ./Frontend:/app
+    depends_on:
+      - backend-p2
+    networks:
+      - todo-net-p2
+    restart: unless-stopped
+
+  nginx-p2:
+    image: nginx:alpine
+    container_name: todo-nginx-p2
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/nginx.part2.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend-p2
+      - frontend-p2
+    networks:
+      - todo-net-p2
+    restart: unless-stopped
+
+networks:
+  todo-net-p2:
+    driver: bridge
